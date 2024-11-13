@@ -1,0 +1,21 @@
+Commands
+
+ctr vs crictl
+
+ctr --> containerD
+
+crictl for all
+
+crictl pods
+
+crictl ps -a
+
+crictl logs pod_id
+
+cd /etc/systemd
+
+journalctl -->logging command of systemd-> use for logs
+
+sudo journalctl --since yesterday
+
+sudo journalctl --since yesterday -0 json-pretty
