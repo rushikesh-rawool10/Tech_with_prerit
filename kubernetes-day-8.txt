@@ -1,0 +1,122 @@
+Kubernetes day-8
+
+Namespaces
+
+K  api-resources --namespaced=true - to see which objects can be declared under namespaces
+
+Namespaces for isolation
+Isolation at application wise
+And for environment also like- Dev STG prod
+Grouping
+Naming convention
+Customised resource allocation
+Per team per project per env
+
+When not to use namespace
+
+Fine grained billing
+Compliance of assured workloads
+Geo distributed deploy
+
+Resource limit---
+
+
+
+
+Best practice- never defined limit and request for cpu
+Cpu is compressible 
+
+Keep request = limit for memeory
+To avoid oom out of memeory issue
+
+out of CPU- slowness
+
+out of ram(memory)-- crash
+
+--------------------------------
+
+Quality of Service
+
+Guranteed-- limit & request are same
+
+Burstable-- limit or request, either one is defined
+
+Best Effort-- limit or request no one is mentioned
+
+
+whem it comes to pod eviction, 
+
+1. best effort 2. burstable 3. guranteed
+
+==========================================
+
+REsource Quotas
+
+AT Namespace level we can limit kubernetes objects like ingress, services etc
+
+
+apiVersion: vl
+kind: ResourceQuota metadata:
+	name: resourcequota-memory
+	namespace: day8
+spec:
+	hard:
+	  requests.storage: "500Mi"
+	  
+	  
+	============================================
+
+Limit Ranges
+
+apiVersion: vl 
+kind: LimitRange
+metadata:
+	name: default-cpu-mem
+	namespace: stg
+spec:
+	limits:
+    -defaultRequest:
+		cpu: "0.5"
+        memory: "200Mi" 
+	 type: Container
+
+when we defined limit ranges, for every new pod this limit ranges get applied automatically
+
+========================Taints & Tolerations===================
+
+Taints at Node Level
+
+Tolerations at pod level
+
+
+K taint node node_name  dal=purani:NoSchedule
+
+
+Pod Tolerations
+
+
+apiVersion: vl kind: Pod
+metadata:
+	creationTimestamp: null
+	labels:
+     run: nodename
+    name: nodename
+spec:
+	containers:
+	-image: redis
+	 name: nodename
+	 resources: {}
+    nodeName:gke-k8s-hindi-day-8-pool-day8-3916688d-sz0d
+	dns Policy: ClusterFirst
+	restartPolicy: Always
+status: {} 
+
+
+
+=======================================================
+
+Affinity & Anti-Affinity
+
+If previous pod running on node taint= dal=purani and you want to schedule a pod on node taint defined dal=purani is called Affinity
+
+if do not want to schedule on node taint is defined as dal=purai is call ed Anti-Affinity 

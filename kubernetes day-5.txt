@@ -1,0 +1,62 @@
+kubernetes day-5
+
+Rolling Update--->By default option
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollout-demo
+  labels:
+    app: rollout-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rollout-phase
+  template:
+    metadata:
+      labels:
+        app: rollout-phase
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+	maxSurge: 50%
+	maxUnavailable: 25%
+	
+	
+--------------------------------------
+k set image deploy rollout-demo nginx=nginx:latest
+								(container_name)
+
+k rollout history deploy rollout-demo
+
+k describe deploy rollout-demo
+
+k rollout undo deploy rollout-demo --to -revision=1
+
+revision upto 10 
+
+-------------------
+
+production strategy-->
+
+depends on --> error budget
+				business utilities
+				architecture
+				
+update startegy preferences-->
+
+1. roll out
+2. canary
+
+3. blue-green is cost consuming. need to make exact replicas(resources+ infra) plus required down time
+
+
+			

@@ -1,0 +1,55 @@
+Kubernetes day-4
+
+pod cycle
+
+1. kubectl-->API SERVER--> ETCD--> API SERVER--> SCHEDULER-->API server-->Kubelet
+
+2. INIT Container  (if exit code 0 goes to next)
+
+3. main container
+
+4. Probes
+
+5. traffic
+
+================================INit containers=============
+
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - name: init-mydb
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+	
+	
+	============================sidecar container=========
+	containers:
+        - name: myapp
+          image: alpine:latest
+          command: ['sh', '-c', 'while true; do echo "logging" >> /opt/logs.txt; sleep 1; done']
+          volumeMounts:
+            - name: data
+              mountPath: /opt
+      initContainers:
+        - name: logshipper
+          image: alpine:latest
+          restartPolicy: Always
+          command: ['sh', '-c', 'tail -F /opt/logs.txt']
+          volumeMounts:
+            - name: data
+              mountPath: /opt
+			  
+==========================================================
+
+when you exec -it container, by default you entered into app container, then you have to mentioned sidecar contaimer name to enter into sidecar container
+
+kubectl exec -it -pod_name -c side_car_container -- bash 
+
+
+before sidecar we were unable to exec into init container because no restart_policy

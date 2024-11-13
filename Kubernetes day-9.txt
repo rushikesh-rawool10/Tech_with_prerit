@@ -1,0 +1,77 @@
+Kubernetes day-9
+
+etc/kubernetes/manifests---IMP
+
+
+kube config
+
+root/.kube/config
+
+in config file context means bonding of user and cluster
+
+modes of authentication=====
+
+webhook
+static token
+x509 certs
+custom
+
+
+create service account
+k create serviceaccount twp-day9
+
+create token
+TOKEN=$(k create token twp-day9)
+
+k config current-context
+
+k config set-credentials twp-day9--token=$TOKEN
+
+create context
+k config set-context twp-day9-user-context --cluster=day-9-and-10 --user=twp-day9
+
+
+MOdes of authorization==========
+
+always allow
+always deny
+RBAC
+
+===============================
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+	namespace: default
+	name: pod-intern
+rules:
+-   apiGroups: ["" ""] # indicates the core API group
+	resources: ["pods", "deployment"]
+	verbs: ["get", "watch", "create"]
+	
+==============================================================
+ k auth reconcile -f clusterrole.yml --> to check what will be applied
+
+kind: role can be applied under kind:roleBinding
+
+cluster can be applid at both role and role binding 
+
+=============VOlumes=============
+
+
+apiVersion: vl
+kind: Pod
+metadata:
+	name: test-pd
+spec:
+	containers:
+	-	image: registry.k8s.io/test-webserver
+		name: test-container
+		volumeMounts:
+		- mountPath: /cache
+		name: cache-volume
+	volumes:
+	- name: cache-volume
+	  emptyDir: {}
+	

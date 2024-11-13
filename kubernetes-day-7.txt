@@ -1,0 +1,137 @@
+kubernetes-day-7
+
+Certificates
+
+
+client --> Server
+
+client & server both having their own public key, these public keys verfied by CA(certificate authority)
+Then client has it's session key, session key gets wrapped with public key and send it to server.
+By this means both clien n=and server both having session key.
+
+
+Let's encrypt --> open source certificate authority
+
+
+----install certificate manager using kubectl command
+
+k apply -f  https://github.com/cert-manager/cert-manager/releases/download/v1.14..5/cert-manager.yml
+
+internal CA gets downloads
+
+CA also called as proxy server
+
+kubernetes recognizes that internal CA gets installed	
+
+
+--> cluster issuer.yml
+need to mentioned ingressClassName
+
+k get clusterissuer---> letsencypt-ci
+
+-------------------------
+
+certificate.yml
+
+kind: certificate
+
+spec: 
+	secretName:tls-cert
+	dnsNames:
+	- dev.kubecloud.tech
+	issuerRef:
+		name: letencypt-ci
+		kind:ClusterIssuer
+		
+==========================================================
+
+when we apply cerficate.yml, one request gets generated, this req will go to CA, CA will verify it and certificate will get download in secret name-> tls-cert	
+
+---------------------------------------ingress having some dissculties--
+
+kubenetes developers develope Gateway-api	
+
+k get gatewayclassess
+
+gcloud container  clusters update day-6-kubernetes-hindi \ --location=us-central1-c\
+
+
+-----------------------service vs ingress
+both are use to access application by external user
+
+but in service access on ip:port, it is not user friendly to remember to each ip
+
+hence ingress is introduced, based domain name
+
+host based access, path based access
+
+in ingress we can define on which host /path we need access which service
+
+===================================================================================
+
+gateway yml
+
+
+apiVersion: gateway.networking.k8s.io/v1betal
+kind: Gateway
+metadata:
+	name: day7-gateway
+spec:
+	gatewayClassName: gke-17-gxlb
+	listeners:
+	-name: http
+	 protocol: HTTP
+	 port: 8080
+	 
+	 
+	 
+---------------------------------------
+Final Route yml
+
+apiVersion: gateway.networking.k8s.io/v1betal
+kind: HTTPRoute
+metadata:
+	name: day7-route
+spec:
+	parentRefs:
+	- kind: Gateway
+	  name: day7-gateway
+	hostnames:
+    - "dev.kubecloud.tech"
+	rules:
+	- backendRefs:
+      -name: app-2-service
+	   port: 8080
+	   
+	   
+	   -------------------------------------------------GMAIL------
+	   
+	   Day 7
+
+CA - certificate authority
+
+
+
+TLS - transmission layer security- in this only server identity get confirmed
+
+
+
+MTLS - Mutual TLS- in this both client server identity get confirmed. 
+
+
+
+On internet TLS is applied
+
+When 2 services talked with each other using MTLS
+
+
+
+Kubectl get gateway
+
+
+
+K apply -f /home/prerit/day7 -R - to apply all yml files inside folder
+
+
+
+K get pods -A -> all pods in all namespaces

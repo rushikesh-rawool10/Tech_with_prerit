@@ -1,0 +1,144 @@
+kubernetes day-6
+
+k describe deploy deploy_name
+
+
+k create deploy day-6 --image=docker.io/techwithprerit/k8-hindi-app1:1.2 --replicas=2
+
+service-->
+
+k expose deploy day-6 --type=LoadBalancer --port=8080
+
+types of services in k8s-->
+
+cluster IP--when we want keep app/db as internal service
+
+NodePOrt-- app access is on port, very dangerous for attack,multiple pod need to open as port get assigned to app
+
+LoadBalancer-- 
+
+headLess-- no external or internal ip assigned/ mostly used for DB's
+when you want take control and decide, where you want to route the traffic at particular pod
+
+
+endpoints vs slices
+
+ endpoint slice is an abstraction
+
+endpoint slices run ender the services
+
+pods are ephemeral in nature--ip is not fixed for pod, for dies, pod re-create, everytime k8s assigns new ip to it
+
+purpose of endpoint slice is to group the pods
+
+by default 100 n/w endpoint/pods can into endpoint slice, but configured upto 1000 slices
+
+
+
+----------------------------------GMAIL
+
+
+Prerit
+
+
+
+EndpointSlice
+
+When we create a service, by default endpoint slice get created.
+
+
+
+K expose deploy day-6 --port 8080
+
+K get endpointslices (under endpoints you will see ip address of pods)
+
+
+
+K get pods -o wide
+
+
+
+You have created new pod after EndpointSlice deployment and want to edit that
+
+
+
+K edit endpointslice EndpointSlice_name
+
+
+
+endpoints:
+
+  addresses:
+
+      -10.2.3.4
+
+  addresses:
+
+       -10.3.4.5
+
+  
+
+
+
+Noport- node ka port
+
+
+
+Target port- traffic kha bhejna hai
+
+In docker file we expose port, that port is same as target port
+
+
+
+Port- service ka port
+
+
+
+By default port is target port.
+
+And protocol is TCP
+
+Can you have service without selector? Yes
+
+For that you need to make one endpointslice and add
+
+
+
+Ip's of node doesn't have any relation with ip's of svc
+
+
+
+
+
+K expose deploy day-6 --type LoadBalancer --port=8080 -> this will automatically create a load balancer in your corresponding cloud provider
+
+
+
+--- the dashes, in one single file we can write multiple yaml files
+
+
+
+K logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+
+
+
+Error-404 page not found
+
+How to solve
+
+Go to ingress yml file
+
+In spec add.
+
+spec: 
+
+    ingressClassName:nginx
+
+         
+
+
+
+Cloud load balancer and kubernets load balancer service is same
+
+=============================
+
